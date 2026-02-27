@@ -1,1 +1,506 @@
-ArtGorka
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        .method-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .method-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .method-btn.get { background: #61affe; color: white; }
+        .method-btn.post { background: #49cc90; color: white; }
+        .method-btn.put { background: #fca130; color: white; }
+        .method-btn.delete { background: #f93e3e; color: white; }
+        .method-btn.patch { background: #50e3c2; color: white; }
+
+        .method-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-code {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .status-success { background: #49cc90; }
+        .status-error { background: #f93e3e; }
+        .status-info { background: #61affe; }
+
+        .response-body {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #f1f1f1;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .history-item {
+            padding: 10px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .history-item:hover {
+            background: #e9ecef;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 REST API Tester</h1>
+        
+        <div class="method-select">
+            <button class="method-btn get active" data-method="GET">GET</button>
+            <button class="method-btn post" data-method="POST">POST</button>
+            <button class="method-btn put" data-method="PUT">PUT</button>
+            <button class="method-btn patch" data-method="PATCH">PATCH</button>
+            <button class="method-btn delete" data-method="DELETE">DELETE</button>
+        </div>
+
+        <div class="form-group">
+            <label for="url">API URL</label>
+            <input type="url" id="url" placeholder="http://artgorka/api/projects" value="http://artgorka/api/projects">
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="headers">Headers</button>
+            <button class="tab" data-tab="body">Body</button>
+            <button class="tab" data-tab="history">History</button>
+        </div>
+
+        <div class="tab-content active" id="headers-tab">
+            <div class="form-group">
+                <label for="headers">Headers (JSON format)</label>
+                <textarea id="headers" placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'>{}</textarea>
+            </div>
+        </div>
+
+        <div class="tab-content" id="body-tab">
+            <div class="form-group">
+                <label for="body">Request Body (JSON format)</label>
+                <textarea id="body" placeholder='{"key": "value"}'>{
+  "title": "foo",
+  "body": "bar",
+  "userId": 1
+}</textarea>
+            </div>
+        </div>
+
+        <div class="tab-content" id="history-tab">
+            <div id="history-list"></div>
+        </div>
+
+        <button class="send-btn" id="sendBtn">Send Request</button>
+
+        <div class="response-section" id="responseSection" style="display: none;">
+            <div class="response-header">
+                <h3>Response</h3>
+                <div>
+                    <span class="status-code" id="statusCode"></span>
+                    <button class="copy-btn" id="copyBtn">Copy</button>
+                </div>
+            </div>
+            <div class="response-body" id="responseBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // API Tester Application
+        class APITester {
+            constructor() {
+                this.currentMethod = 'GET';
+                this.history = [];
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadHistory();
+            }
+
+            bindEvents() {
+                // Method buttons
+                document.querySelectorAll('.method-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentMethod = e.target.dataset.method;
+                        this.toggleBodyField();
+                    });
+                });
+
+                // Tabs
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        e.target.classList.add('active');
+                        document.getElementById(`${e.target.dataset.tab}-tab`).classList.add('active');
+                    });
+                });
+
+                // Send button
+                document.getElementById('sendBtn').addEventListener('click', () => this.sendRequest());
+
+                // Copy button
+                document.getElementById('copyBtn').addEventListener('click', () => this.copyResponse());
+
+                // Initial body field toggle
+                this.toggleBodyField();
+            }
+
+            toggleBodyField() {
+                const bodyTab = document.querySelector('[data-tab="body"]');
+                if (['GET', 'DELETE'].includes(this.currentMethod)) {
+                    bodyTab.style.display = 'none';
+                    if (bodyTab.classList.contains('active')) {
+                        document.querySelector('[data-tab="headers"]').click();
+                    }
+                } else {
+                    bodyTab.style.display = 'block';
+                }
+            }
+
+            async sendRequest() {
+                const url = document.getElementById('url').value.trim();
+                const headersText = document.getElementById('headers').value.trim();
+                const bodyText = document.getElementById('body').value.trim();
+
+                if (!url) {
+                    alert('Please enter a URL');
+                    return;
+                }
+
+                let headers = {};
+                let body = null;
+
+                try {
+                    if (headersText) {
+                        headers = JSON.parse(headersText);
+                    }
+                } catch (e) {
+                    alert('Invalid JSON in headers');
+                    return;
+                }
+
+                try {
+                    if (bodyText && !['GET', 'DELETE'].includes(this.currentMethod)) {
+                        body = JSON.parse(bodyText);
+                    }
+                } catch (e) {
+                    alert('Invalid JSON in body');
+                    return;
+                }
+
+                // Show loading
+                this.showLoading();
+
+                const startTime = Date.now();
+
+                try {
+                    const options = {
+                        method: this.currentMethod,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...headers
+                        }
+                    };
+
+                    if (body && !['GET', 'DELETE'].includes(this.currentMethod)) {
+                        options.body = JSON.stringify(body);
+                    }
+
+                    const response = await fetch(url, options);
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+
+                    const data = await response.json().catch(() => response.text());
+
+                    this.displayResponse(response.status, data, duration);
+                    this.addToHistory(url, this.currentMethod, response.status, duration);
+
+                } catch (error) {
+                    this.displayResponse(0, { error: error.message }, Date.now() - startTime);
+                }
+            }
+
+            showLoading() {
+                document.getElementById('responseSection').style.display = 'block';
+                document.getElementById('responseBody').innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Sending request...</p>
+                    </div>
+                `;
+                document.getElementById('sendBtn').disabled = true;
+            }
+
+            displayResponse(status, data, duration) {
+                const responseSection = document.getElementById('responseSection');
+                const statusCode = document.getElementById('statusCode');
+                const responseBody = document.getElementById('responseBody');
+
+                responseSection.style.display = 'block';
+                document.getElementById('sendBtn').disabled = false;
+
+                // Status code styling
+                statusCode.textContent = `${status} ${duration}ms`;
+                statusCode.className = 'status-code';
+                if (status >= 200 && status < 300) {
+                    statusCode.classList.add('status-success');
+                } else if (status >= 400) {
+                    statusCode.classList.add('status-error');
+                } else {
+                    statusCode.classList.add('status-info');
+                }
+
+                // Format response
+                if (typeof data === 'object') {
+                    responseBody.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    responseBody.textContent = data;
+                }
+            }
+
+            addToHistory(url, method, status, duration) {
+                const entry = {
+                    url,
+                    method,
+                    status,
+                    duration,
+                    timestamp: new Date().toLocaleString()
+                };
+
+                this.history.unshift(entry);
+                if (this.history.length > 10) {
+                    this.history.pop();
+                }
+
+                localStorage.setItem('apiHistory', JSON.stringify(this.history));
+                this.renderHistory();
+            }
+
+            loadHistory() {
+                const saved = localStorage.getItem('apiHistory');
+                if (saved) {
+                    this.history = JSON.parse(saved);
+                    this.renderHistory();
+                }
+            }
+
+            renderHistory() {
+                const historyList = document.getElementById('history-list');
+                historyList.innerHTML = this.history.map((item, index) => `
+                    <div class="history-item" onclick="apiTester.loadHistoryItem(${index})">
+                        <strong>${item.method}</strong> - ${item.url}<br>
+                        <small>Status: ${item.status} | Time: ${item.duration}ms | ${item.timestamp}</small>
+                    </div>
+                `).join('');
+            }
+
+            loadHistoryItem(index) {
+                const item = this.history[index];
+                document.getElementById('url').value = item.url;
+                document.querySelector(`[data-method="${item.method}"]`).click();
+            }
+
+            copyResponse() {
+                const text = document.getElementById('responseBody').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const copyBtn = document.getElementById('copyBtn');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+                });
+            }
+        }
+
+        // Initialize the application
+        const apiTester = new APITester();
+    </script>
+</body>
+</html>
