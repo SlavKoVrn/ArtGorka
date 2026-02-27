@@ -23,6 +23,7 @@ spl_autoload_register(function ($class) {
 // ============================================
 
 use App\Logger\Logger;
+use App\Helpers\UrlHelper;
 
 // Создаем глобальный экземпляр логгера
 $logger = new Logger(0); // 2 = WARNING и выше
@@ -95,9 +96,13 @@ try {
     } else if ($uri === '/') {
         http_response_code(200);
         header('Content-Type: text/html; charset=utf-8');
-        include __DIR__ . '/../views/home.html';
+        $templateData = [
+            'api_endpoint' => UrlHelper::getBaseUrl() . '/api/projects'
+        ];
+        // Рендерим шаблон с заменой плейсхолдеров
+        echo UrlHelper::render(__DIR__ . '/../views/home.html', $templateData);
         $logger->info('Root page served');
-        exit;
+
     } else {
         $logger->warning('Endpoint not found', ['uri' => $uri]);
         http_response_code(404);
