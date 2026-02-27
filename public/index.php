@@ -25,7 +25,7 @@ spl_autoload_register(function ($class) {
 use App\Logger\Logger;
 
 // Создаем глобальный экземпляр логгера
-$logger = new Logger(2); // 2 = WARNING и выше
+$logger = new Logger(0); // 2 = WARNING и выше
 
 // Перехват всех PHP ошибок
 set_error_handler(function($severity, $message, $file, $line) use ($logger) {
@@ -92,6 +92,12 @@ try {
             http_response_code(405);
             echo json_encode(['success' => false, 'message' => 'Method Not Allowed']);
         }
+    } else if ($uri === '/') {
+        http_response_code(200);
+        header('Content-Type: text/html; charset=utf-8');
+        include __DIR__ . '/../views/home.html';
+        $logger->info('Root page served');
+        exit;
     } else {
         $logger->warning('Endpoint not found', ['uri' => $uri]);
         http_response_code(404);
