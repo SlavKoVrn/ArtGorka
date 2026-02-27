@@ -1,0 +1,80 @@
+# public/.htaccess
+
+# Включаем движок перезаписи
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Устанавливаем базовый путь (если проект в подпапке, укажите её, например /project)
+    RewriteBase /
+
+    # Если запрашиваемый файл или директория существуют - отдаем их (для статики: css, js, images)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Все остальные запросы перенаправляем на index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Если mod_rewrite не доступен (резервный вариант)
+<IfModule !mod_rewrite.c>
+    ErrorDocument 404 "Включите mod_rewrite для работы API"
+</IfModule>
+
+# ============================================
+# БЕЗОПАСНОСТЬ
+# ============================================
+
+# Запрещаем просмотр содержимого директорий
+Options -Indexes
+
+# Защищаем чувствительные файлы от прямого доступа
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Запрещаем доступ к конфигам и логам (на случай если они попадут в public)
+<FilesMatch "\.(env|config|ini|log|sql|sh|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ============================================
+# HTTP ЗАГОЛОВКИ (Security & Performance)
+# ============================================
+
+<IfModule mod_headers.c>
+    # Защита от XSS
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Запрет клики по фрейму (Clickjacking)
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Защита от MIME-sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Политика безопасности контента (CSP)
+    Header set Content-Security-Policy "default-src 'self'"
+    
+    # Кэширование для API ответов (отключаем кэш для динамики)
+    <FilesMatch "\.(php)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# ============================================
+# СЖАТИЕ (Gzip)
+# ============================================
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ============================================
+# КОДИРОВКА
+# ============================================
+
+AddDefaultCharset UTF-8

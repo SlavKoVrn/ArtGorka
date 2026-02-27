@@ -1,0 +1,8 @@
+# .htaccess (в корне проекта)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Перенаправляем все запросы в папку public
+    RewriteRule ^$ public/ [L]
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
