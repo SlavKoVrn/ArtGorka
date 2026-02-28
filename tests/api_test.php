@@ -384,12 +384,12 @@ class ApiTester
         }
 
         // Тест: Удаление несуществующего проекта
-//        $result = $this->request('DELETE', '/api/projects/999999');
-//        $this->logTest(
-//            'Delete Non-existent Project',
-//            $result['http_code'] === 404,
-//            "Expected 404, got {$result['http_code']}"
-//        );
+        $result = $this->request('DELETE', '/api/projects/999999');
+        $this->logTest(
+            'Delete Non-existent Project',
+            $result['http_code'] === 404,
+            "Expected 404, got {$result['http_code']}"
+        );
     }
 
     /**

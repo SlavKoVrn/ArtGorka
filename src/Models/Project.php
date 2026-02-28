@@ -58,6 +58,8 @@ class Project
 
     public function update(int $id, array $data): bool
     {
+        if (!$this->getById($id)) return false;
+
         // Динамическое построение запроса UPDATE
         $setParts = [];
         $params = [':id' => $id];
@@ -80,6 +82,8 @@ class Project
 
     public function delete(int $id): bool
     {
+        if (!$this->getById($id)) return false;
+
         $stmt = $this->db->prepare("DELETE FROM projects WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }
