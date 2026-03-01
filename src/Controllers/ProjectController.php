@@ -168,4 +168,138 @@ class ProjectController
             $this->jsonResponse(['success' => false, 'message' => 'Failed to delete project'], 500);
         }
     }
+
+    /**
+     * Проверка доступности проекта по ID
+     * POST /api/projects/{id}/check
+     */
+    public function checkAvailability(int $projectId): void
+    {
+        try {
+            $this->logger->info('Checking project availability', ['project_id' => $projectId]);
+
+            // Получаем проект
+            $project = $this->projectModel->getById($projectId);
+
+            if (!$project) {
+                $this->logger->warning('Project not found for availability check', ['id' => $projectId]);
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Project not found']);
+                return;
+            }
+
+            $url = $project['url'];
+
+            // Валидация URL
+            if (!filter_var($url, FILTER_VALIDATE_URL)) {
+                $this->logger->warning('Invalid URL for availability check', [
+                    'project_id' => $projectId,
+                    'url' => $url
+                ]);
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Invalid project URL']);
+                return;
+            }
+
+            // Выполняем проверку
+            $result = $this->performUrlCheck($url);
+
+            $this->logger->info('Availability check completed', [
+                'project_id' => $projectId,
+                'status' => $result['status'],
+                'http_code' => $result['http_code'],
+                'response_time' => $result['response_time']
+            ]);
+
+            // Возвращаем результат
+            http_response_code(200);
+            echo json_encode([
+                'success' => true,
+                'data' => [
+                    'project_id' => $projectId,
+                    'url' => $url,
+                    'status' => $result['status'],           // 'available' | 'unavailable'
+                    'http_code' => $result['http_code'],     // 200, 404, 500, etc.
+                    'response_time' => $result['response_time'], // в миллисекундах
+                    'checked_at' => $result['checked_at']    // ISO 8601 timestamp
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to check availability', [
+                'project_id' => $projectId,
+                'error' => $e->getMessage()
+            ]);
+
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to check availability',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Выполняет HTTP запрос для проверки доступности URL
+     */
+    private function performUrlCheck(string $url, int $timeout = 10): array
+    {
+        $startTime = microtime(true);
+        $ch = curl_init();
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_USERAGENT => 'ProjectManager/1.0 Availability Checker',
+            CURLOPT_NOBODY => true, // HEAD запрос для экономии трафика
+            CURLOPT_ENCODING => ''
+        ]);
+
+        $result = [
+            'http_code' => 0,
+            'response_time' => 0,
+            'status' => 'unavailable',
+            'checked_at' => date('c'),
+            'error' => null
+        ];
+
+        try {
+            curl_exec($ch);
+
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $endTime = microtime(true);
+
+            $result['http_code'] = $httpCode;
+            $result['response_time'] = round(($endTime - $startTime) * 1000, 2); // мс
+            $result['checked_at'] = date('c');
+
+            // Считаем доступным если статус 2xx или 3xx
+            if ($httpCode >= 200 && $httpCode < 400) {
+                $result['status'] = 'available';
+            }
+
+            // Логируем ошибки cURL
+            $curlError = curl_error($ch);
+            if ($curlError) {
+                $result['error'] = $curlError;
+                $result['status'] = 'unavailable';
+            }
+
+        } catch (\Exception $e) {
+            $result['error'] = $e->getMessage();
+            $result['status'] = 'unavailable';
+        } finally {
+            curl_close($ch);
+        }
+
+        return $result;
+    }
+
 }

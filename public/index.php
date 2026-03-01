@@ -76,18 +76,30 @@ try {
         
         $pathInfo = trim(substr($uri, strlen('/api/projects')), '/');
 
+        // Парсим путь на части: [id, action]
+        $pathParts = explode('/', $pathInfo);
+        $projectId = $pathParts[0] ?? null;
+        $action = $pathParts[1] ?? null;
+
         if ($method === 'GET') {
             if (empty($pathInfo)) {
                 $controller->index();
             } else {
-                $controller->show($pathInfo);
+                $controller->show((int)$projectId);
             }
         } elseif ($method === 'POST') {
-            $controller->store();
+            if ($action === 'check' && is_numeric($projectId)) {
+                // ========================================
+                // НОВЫЙ ЭНДПОИНТ: POST /api/projects/{id}/check
+                // ========================================
+                $controller->checkAvailability((int)$projectId);
+            }else{
+                $controller->store();
+            }
         } elseif ($method === 'PUT') {
-            $controller->update($pathInfo);
+            $controller->update((int)$projectId);
         } elseif ($method === 'DELETE') {
-            $controller->destroy($pathInfo);
+            $controller->destroy((int)$projectId);
         } else {
             $logger->warning('Method not allowed', ['method' => $method]);
             http_response_code(405);
