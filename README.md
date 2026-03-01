@@ -115,3 +115,39 @@ project/
 
 **Проверка доступности сайтов:** endpoint `POST /api/projects/{id}/check` — запустить проверку доступности. Ответ: HTTP статус код, время ответа (мс), 
 статус (доступен/недоступен), время проверки. Результат можно сохранять в БД или возвращать напрямую.
+
+# Установка REST API
+
+### 1. клонирование проекта
+
+```bash
+git clone https://github.com/SlavKoVrn/ArtGorka
+```
+
+### 2. установка параметров базы данных
+
+```bash
+config/database.php
+return [
+    'host' => 'localhost',
+    'port' => '3306',
+    'db_name' => 'project_manager',
+    'username' => 'root',
+    'password' => '3306',
+    'charset' => 'utf8mb4'
+];
+```
+
+### 3. запуск миграции установки базы данных
+
+```bash
+php bin/db.php migrate
+```
+
+### 4. запуск тестов
+
+```bash
+php tests/api_test.php
+```
+
+
