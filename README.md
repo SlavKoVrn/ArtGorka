@@ -147,7 +147,7 @@ php bin/db.php migrate
 ### 4. запуск тестов
 
 ```bash
-php tests/api_test.php
+php tests/api_test.php http://artgorka.kadastrcard.ru
 ```
 
 
