@@ -81,7 +81,10 @@ try {
         $projectId = $pathParts[0] ?? null;
         $action = $pathParts[1] ?? null;
 
-        if ($method === 'GET') {
+        if ($action === 'check' and $method !== 'POST'){
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Check Availability - Wrong Method']);
+        } elseif ($method === 'GET') {
             if (empty($pathInfo)) {
                 $controller->index();
             } else {

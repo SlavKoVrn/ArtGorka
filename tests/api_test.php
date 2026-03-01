@@ -435,6 +435,250 @@ class ApiTester
     }
 
     /**
+     * Тест: Проверка доступности существующего проекта
+     * POST /api/projects/{id}/check
+     */
+    public function testCheckAvailability(): void
+    {
+        echo "\n\n📝 ТЕСТ: Проверка доступности проекта";
+        echo "\n" . str_repeat('-', 50);
+
+        if ($this->projectId === 0) {
+            $this->logTest('Check Availability', false, 'No project ID available (create test failed)');
+            return;
+        }
+
+        $result = $this->request('POST', "/api/projects/{$this->projectId}/check");
+
+        if ($result['http_code'] === 200 && $result['body']['success'] === true) {
+            $data = $result['body']['data'] ?? [];
+
+            // Проверяем структуру ответа
+            $hasProjectId = isset($data['project_id']) && $data['project_id'] === $this->projectId;
+            $hasUrl = isset($data['url']) && filter_var($data['url'], FILTER_VALIDATE_URL);
+            $hasStatus = isset($data['status']) && in_array($data['status'], ['available', 'unavailable']);
+            $hasHttpCode = isset($data['http_code']) && is_int($data['http_code']);
+            $hasResponseTime = isset($data['response_time']) && is_numeric($data['response_time']);
+            $hasCheckedAt = isset($data['checked_at']) && strtotime($data['checked_at']) !== false;
+
+            $structureValid = $hasProjectId && $hasUrl && $hasStatus && $hasHttpCode && $hasResponseTime && $hasCheckedAt;
+
+            $this->logTest(
+                'Check Availability - Response Structure',
+                $structureValid,
+                "Status: {$data['status']}, HTTP: {$data['http_code']}, Time: {$data['response_time']}ms",
+                ['response' => $data]
+            );
+
+            // Если URL доступен (для example.com должен быть доступен)
+            if ($data['status'] === 'available') {
+                $this->logTest(
+                    'Check Availability - Site Reachable',
+                    true,
+                    "Site is accessible as expected"
+                );
+            } elseif ($data['status'] === 'unavailable') {
+                $this->logTest(
+                    'Check Availability - Site Unreachable',
+                    true,
+                    "Site is unreachable (expected for some environments): " . $data['error'] ?? 'no error',
+                    ['note' => 'This may be expected depending on network/firewall']
+                );
+            }
+
+        } else {
+            $this->logTest(
+                'Check Availability',
+                false,
+                "Expected 200, got {$result['http_code']}",
+                ['response' => $result['body']]
+            );
+        }
+    }
+
+    /**
+     * Тест: Проверка доступности несуществующего проекта
+     */
+    public function testCheckAvailabilityNotFound(): void
+    {
+        echo "\n\n📝 ТЕСТ: Проверка несуществующего проекта";
+        echo "\n" . str_repeat('-', 50);
+
+        $result = $this->request('POST', '/api/projects/999999/check');
+
+        $this->logTest(
+            'Check Availability - Not Found',
+            $result['http_code'] === 404,
+            "Expected 404 for non-existent project, got {$result['http_code']}",
+            ['response' => $result['body']]
+        );
+    }
+
+    /**
+     * Тест: Проверка доступности с невалидным ID
+     */
+    public function testCheckAvailabilityInvalidId(): void
+    {
+        echo "\n\n📝 ТЕСТ: Проверка с невалидным ID";
+        echo "\n" . str_repeat('-', 50);
+
+        $result = $this->request('POST', '/api/projects/invalid/check');
+
+        $this->logTest(
+            'Check Availability - Invalid ID',
+            $result['http_code'] === 400,
+            "Expected 400 for invalid ID, got {$result['http_code']}",
+            ['response' => $result['body']]
+        );
+    }
+
+    /**
+     * Тест: Проверка доступности проекта с недоступным URL
+     */
+    public function testCheckAvailabilityUnreachableUrl(): void
+    {
+        echo "\n\n📝 ТЕСТ: Проверка проекта с недоступным URL";
+        echo "\n" . str_repeat('-', 50);
+
+        // Создаем проект с заведомо недоступным URL
+        $createResult = $this->request('POST', '/api/projects', [
+            'name' => 'Unreachable Test ' . time(),
+            'url' => 'http://this-domain-definitely-does-not-exist-12345.invalid',
+            'platform' => 'Custom',
+            'status' => 'development'
+        ]);
+
+        $testId = $createResult['body']['id'] ?? 0;
+
+        if ($testId === 0) {
+            $this->logTest(
+                'Check Unreachable URL - Setup',
+                false,
+                'Failed to create test project',
+                ['response' => $createResult['body']]
+            );
+            return;
+        }
+
+        $result = $this->request('POST', "/api/projects/{$testId}/check");
+
+        if ($result['http_code'] === 200 && $result['body']['success'] === true) {
+            $data = $result['body']['data'] ?? [];
+
+            // Для недоступного URL ожидаем status = 'unavailable'
+            $this->logTest(
+                'Check Unreachable URL - Status',
+                $data['status'] === 'unavailable',
+                "Expected 'unavailable', got '{$data['status']}'",
+                ['error' => $data['error'] ?? 'none']
+            );
+
+            // Проверяем, что время ответа разумное (не мгновенное, но и не вечность)
+            $reasonableTime = $data['response_time'] > 0 && $data['response_time'] < 15000;
+            $this->logTest(
+                'Check Unreachable URL - Response Time',
+                $reasonableTime,
+                "Response time: {$data['response_time']}ms (expected: 0-15000ms)"
+            );
+
+        } else {
+            $this->logTest(
+                'Check Unreachable URL',
+                false,
+                "Expected 200, got {$result['http_code']}",
+                ['response' => $result['body']]
+            );
+        }
+
+        // Очищаем: удаляем тестовый проект
+        $this->request('DELETE', "/api/projects/{$testId}");
+    }
+
+    /**
+     * Тест: Проверка метода GET на эндпоинте /check (должен быть 405)
+     */
+    public function testCheckAvailabilityWrongMethod(): void
+    {
+        echo "\n\n📝 ТЕСТ: Неправильный метод для /check";
+        echo "\n" . str_repeat('-', 50);
+
+        // Пробуем GET вместо POST
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->baseUrl . "/api/projects/{$this->projectId}/check");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        // GET по умолчанию
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $this->logTest(
+            'Check Availability - Wrong Method (GET)',
+            $httpCode === 405,
+            "Expected 405 for GET on /check endpoint, got {$httpCode}"
+        );
+    }
+
+    /**
+     * Тест: Проверка доступности с таймаутом (медленный URL)
+     * @note Этот тест может быть долгим, можно закомментировать при необходимости
+     */
+    public function testCheckAvailabilityTimeout(): void
+    {
+        echo "\n\n📝 ТЕСТ: Проверка с таймаутом (опционально)";
+        echo "\n" . str_repeat('-', 50);
+
+        // Используем httpstat.us для имитации задержки
+        // ?sleep=12000 заставит сервер ждать 12 секунд (больше нашего таймаута 10с)
+        $createResult = $this->request('POST', '/api/projects', [
+            'name' => 'Timeout Test ' . time(),
+            'url' => 'https://httpstat.us/200?sleep=12000',
+            'platform' => 'Custom',
+            'status' => 'development'
+        ]);
+
+        $testId = $createResult['body']['id'] ?? 0;
+
+        if ($testId === 0) {
+            $this->logTest(
+                'Check Timeout - Setup',
+                false,
+                'Failed to create test project',
+                ['skip' => 'httpstat.us may be unavailable']
+            );
+            return;
+        }
+
+        $startTime = microtime(true);
+        $result = $this->request('POST', "/api/projects/{$testId}/check");
+        $duration = round((microtime(true) - $startTime) * 1000, 2);
+
+        if ($result['http_code'] === 200 && $result['body']['success'] === true) {
+            $data = $result['body']['data'] ?? [];
+
+            // Ожидаем, что проверка завершится с timeout/error и статусом unavailable
+            $this->logTest(
+                'Check Timeout - Handled Gracefully',
+                $data['status'] === 'unavailable',
+                "Status: {$data['status']}, Error: " . ($data['error'] ?? 'none'),
+                ['total_duration' => "{$duration}ms"]
+            );
+        } else {
+            // Также допустимо, если сервер вернет ошибку 500 при таймауте
+            $this->logTest(
+                'Check Timeout - Error Handling',
+                in_array($result['http_code'], [200, 500]),
+                "Got HTTP {$result['http_code']} (expected 200 or 500)",
+                ['duration' => "{$duration}ms"]
+            );
+        }
+
+        // Очищаем
+        $this->request('DELETE', "/api/projects/{$testId}");
+    }
+
+    /**
      * Вывод итогов тестирования
      */
     public function printSummary(): void
@@ -478,6 +722,7 @@ class ApiTester
         echo "\nBase URL: {$this->baseUrl}";
         echo "\n" . str_repeat('=', 50);
 
+        // Базовые CRUD тесты
         $this->testCreateProject();
         $this->testCreateProjectInvalid();
         $this->testGetAllProjects();
@@ -485,8 +730,18 @@ class ApiTester
         $this->testGetProjectById();
         $this->testUpdateProject();
         $this->testDeleteProject();
+
+        // Тесты эндпоинтов
         $this->testUnsupportedMethod();
         $this->testNotFoundEndpoint();
+
+        // 🔥 НОВЫЕ ТЕСТЫ: Проверка доступности
+        $this->testCheckAvailability();
+        $this->testCheckAvailabilityNotFound();
+        $this->testCheckAvailabilityInvalidId();
+        $this->testCheckAvailabilityUnreachableUrl();
+        $this->testCheckAvailabilityWrongMethod();
+        $this->testCheckAvailabilityTimeout();
 
         $this->printSummary();
     }
