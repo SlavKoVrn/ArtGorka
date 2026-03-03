@@ -141,6 +141,37 @@
           }
         }
       }
+    },
+    "/api/projects/{id}/check": {
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Check project health or validity",
+        "description": "Perform validation or health checks on an existing project by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Project ID",
+            "required": true,
+            "type": "integer",
+            "minimum": 1
+          },
+        ],
+        "responses": {
+          "200": {
+            "description": "Check completed successfully",
+            "schema": {
+              "$ref": "#/definitions/CheckResult"
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -204,6 +235,50 @@
           "$ref": "#/definitions/ProjectInput"
         }
       ]
+    },
+    "CheckResult": {
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "integer",
+          "example": 1
+        },
+        "checkedAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-06-01T12:00:00Z"
+        },
+        "overallStatus": {
+          "type": "string",
+          "enum": ["passed", "warning", "failed"],
+          "example": "passed"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "ssl"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["passed", "warning", "failed", "skipped"],
+                "example": "passed"
+              },
+              "message": {
+                "type": "string",
+                "example": "SSL certificate is valid and expires in 90 days"
+              },
+              "details": {
+                "type": "object",
+                "description": "Optional detailed check data"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
