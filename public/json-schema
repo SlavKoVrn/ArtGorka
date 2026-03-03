@@ -1,0 +1,209 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "REST API",
+    "version": "srv 1.0",
+    "description": "API for managing projects"
+  },
+  "basePath": "/",
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/api/projects": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get all projects",
+        "description": "Retrieve a list of projects, optionally filtered by status",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter projects by status",
+            "required": false,
+            "type": "string",
+            "enum": ["draft", "production", "archived"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of projects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Project"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Create a new project",
+        "description": "Create a new project with the provided data",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Project data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProjectInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Project created successfully",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input"
+          }
+        }
+      }
+    },
+    "/api/projects/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Project ID",
+          "required": true,
+          "type": "integer",
+          "minimum": 1
+        }
+      ],
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get project by ID",
+        "description": "Retrieve a single project by its ID",
+        "responses": {
+          "200": {
+            "description": "Project details",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Projects"],
+        "summary": "Update project",
+        "description": "Update an existing project by ID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated project data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProjectInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project updated successfully",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Projects"],
+        "summary": "Delete project",
+        "description": "Delete a project by ID",
+        "responses": {
+          "204": {
+            "description": "Project deleted successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ProjectInput": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Project name",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "example": "https://yandex.ru"
+        },
+        "platform": {
+          "type": "string",
+          "example": "Bitrix"
+        },
+        "status": {
+          "type": "string",
+          "example": "production",
+          "enum": ["draft", "production", "archived"]
+        },
+        "description": {
+          "type": "string",
+          "example": "project description",
+          "maxLength": 1000
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "example": 1,
+              "readOnly": true
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-01-15T10:30:00Z",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-01-20T14:45:00Z",
+              "readOnly": true
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/ProjectInput"
+        }
+      ]
+    }
+  }
+}
