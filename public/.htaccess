@@ -55,7 +55,7 @@ Options -Indexes
     Header set X-Content-Type-Options "nosniff"
     
     # Политика безопасности контента (CSP)
-    Header set Content-Security-Policy "default-src 'self'"
+    Header set Content-Security-Policy "frame-ancestors 'self'"
     
     # Кэширование для API ответов (отключаем кэш для динамики)
     <FilesMatch "\.(php)$">
