@@ -1,131 +1,307 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "REST API",
-        "version": "srv 1.0",
-        "description": "API for managing projects"
-    },
-    "paths": {
-        "\/api\/projects": {
-            "get": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Auto-generated endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Auto-generated endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        },
-        "\/api\/projects\/{id}": {
-            "get": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Auto-generated endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Auto-generated endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Auto-generated endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        },
-        "\/api\/projects\/{id}\/check": {
-            "post": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Auto-generated endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "schemas": {
-            "Project": {
-                "type": "object"
-            },
-            "ProjectInput": {
-                "type": "object"
-            },
-            "CheckResult": {
-                "type": "object"
-            }
-        }
+  "openapi": "3.0.0",
+  "info": {
+    "title": "REST API",
+    "version": "srv 1.0",
+    "description": "API for managing projects"
+  },
+  "tags": [
+    {
+      "name": "Projects",
+      "description": "Project management endpoints"
     }
+  ],
+  "paths": {
+    "/api/projects": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get all projects",
+        "description": "Retrieve a list of projects, optionally filtered by status",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter projects by status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["draft", "production", "archived"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Create a new project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Project created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input"
+          }
+        }
+      }
+    },
+    "/api/projects/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Project ID",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get project by ID",
+        "responses": {
+          "200": {
+            "description": "Project details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Projects"],
+        "summary": "Update project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Projects"],
+        "summary": "Delete project",
+        "responses": {
+          "204": {
+            "description": "Project deleted successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      }
+    },
+    "/api/projects/{id}/check": {
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Check project health or validity",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Project ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Check completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProjectInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Project name",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://yandex.ru"
+          },
+          "platform": {
+            "type": "string",
+            "example": "Bitrix"
+          },
+          "status": {
+            "type": "string",
+            "example": "production",
+            "enum": ["draft", "production", "archived"]
+          },
+          "description": {
+            "type": "string",
+            "example": "project description",
+            "maxLength": 1000
+          }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1,
+                "readOnly": true
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2024-01-15T10:30:00Z",
+                "readOnly": true
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2024-01-20T14:45:00Z",
+                "readOnly": true
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ProjectInput"
+          }
+        ]
+      },
+      "CheckResult": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "example": 1
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-06-01T12:00:00Z"
+          },
+          "overallStatus": {
+            "type": "string",
+            "enum": ["passed", "warning", "failed"],
+            "example": "passed"
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "ssl"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["passed", "warning", "failed", "skipped"],
+                  "example": "passed"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "SSL certificate is valid and expires in 90 days"
+                },
+                "details": {
+                  "type": "object",
+                  "description": "Optional detailed check data"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
