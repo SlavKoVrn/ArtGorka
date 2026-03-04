@@ -300,6 +300,26 @@ try {
         echo UrlHelper::render(__DIR__ . '/../views/home.html', $templateData);
         $logger->info('Root page served');
 
+    } else if ($uri === '/docs') {
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>API Docs</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+        </head>
+        <body>
+            <div id="swagger-ui"></div>
+            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+            <script>
+                SwaggerUIBundle({
+                    url: "/swagger.json",
+                    dom_id: "#swagger-ui"
+                });
+            </script>
+        </body>
+        </html>';
+        exit;
     } else {
         $logger->warning('Endpoint not found', ['uri' => $uri]);
         http_response_code(404);
