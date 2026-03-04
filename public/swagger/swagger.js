@@ -1,7 +1,7 @@
     window.onload = function () {
         // Build a system
         const ui = SwaggerUIBundle({
-            url: "/json-schema",
+            url: "/swagger.json",
             dom_id: '#swagger-ui',
             deepLinking: true,
             jsonEditor: true,
