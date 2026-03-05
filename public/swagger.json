@@ -125,7 +125,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Project"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolen",
+                      "enum": ["true", "false"],
+                      "example": "true"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Project"
+                    }
+                  }
                 }
               }
             }
