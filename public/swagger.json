@@ -35,10 +35,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Project"
-                  }
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolen",
+                      "enum": ["true", "false"],
+                      "example": "true"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Project"
+                        }
+                      }
+                    }
                 }
               }
             }
