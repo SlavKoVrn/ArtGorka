@@ -7,7 +7,14 @@ use App\Validators\ProjectValidator;
 use App\Logger\Logger;
 use OpenApi\Attributes as OA;
 
-#[OA\Tag(name: 'Projects', description: 'Project management endpoints')]
+#[OA\OpenApi(
+    openapi: '3.0.0',
+    info: new OA\Info(
+        title: 'Project API',
+        version: '1.0.0',
+        description: 'API Documentation'
+    )
+)]
 class ProjectController
 {
     private Project $projectModel;
