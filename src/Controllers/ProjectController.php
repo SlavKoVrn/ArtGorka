@@ -5,7 +5,9 @@ namespace App\Controllers;
 use App\Models\Project;
 use App\Validators\ProjectValidator;
 use App\Logger\Logger;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'Projects', description: 'Project management endpoints')]
 class ProjectController
 {
     private Project $projectModel;
@@ -31,6 +33,44 @@ class ProjectController
         return json_decode($input, true) ?? [];
     }
 
+    /**
+     * List all projects
+     */
+    #[OA\Get(
+        path: '/api/projects',
+        tags: ['Projects'],
+        summary: 'Get all projects',
+        description: 'Returns a paginated list of all projects',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'page',
+                in: 'query',
+                required: false,
+                description: 'Page number',
+                schema: new OA\Schema(type: 'integer', default: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                in: 'query',
+                required: false,
+                description: 'Items per page',
+                schema: new OA\Schema(type: 'integer', default: 10)
+            ),
+            new OA\Parameter(
+                name: 'status',
+                in: 'query',
+                required: false,
+                description: 'Filter by status',
+                schema: new OA\Schema(type: 'string', enum: ['active', 'archived'])
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200,description: 'Successful response'),
+            new OA\Response(response: 401, description: 'Unauthorized'),
+            new OA\Response(response: 500, description: 'Server error')
+        ]
+    )]
     public function index(): void
     {
         try {
