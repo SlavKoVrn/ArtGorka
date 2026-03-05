@@ -240,16 +240,16 @@
                 "example": 1,
                 "readOnly": true
               },
-              "createdAt": {
+              "created_at": {
                 "type": "string",
                 "format": "date-time",
-                "example": "2024-01-15T10:30:00Z",
+                "example": "2026-03-05 14:22:00",
                 "readOnly": true
               },
-              "updatedAt": {
+              "updated_at": {
                 "type": "string",
                 "format": "date-time",
-                "example": "2024-01-20T14:45:00Z",
+                "example": "2026-03-05 14:22:00",
                 "readOnly": true
               }
             }
@@ -262,41 +262,44 @@
       "CheckResult": {
         "type": "object",
         "properties": {
-          "projectId": {
-            "type": "integer",
-            "example": 1
+          "success": {
+            "type": "boolen",
+            "enum": ["true", "false"],
+            "example": "true"
           },
-          "checkedAt": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-06-01T12:00:00Z"
-          },
-          "overallStatus": {
-            "type": "string",
-            "enum": ["passed", "warning", "failed"],
-            "example": "passed"
-          },
-          "checks": {
+          "data": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "ssl"
+                "project_id": {
+                  "type": "integer",
+                  "example": "1"
+                },
+                "url": {
+                  "type": "uri",
+                  "example": "http://yandex.ru"
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["passed", "warning", "failed", "skipped"],
-                  "example": "passed"
+                  "enum": ["available", "unavailable"],
+                  "example": "request return status 200"
                 },
-                "message": {
+                "http_code": {
                   "type": "string",
-                  "example": "SSL certificate is valid and expires in 90 days"
+                  "enum": ["200", "400"],
+                  "example": "200",
+                  "description": "request return status"
                 },
-                "details": {
-                  "type": "object",
-                  "description": "Optional detailed check data"
+                "response_time": {
+                  "type": "float",
+                  "example": "98.27",
+                  "description": "request time executed"
+                },
+                "checked_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2026-03-05 14:22:00"
                 }
               }
             }
