@@ -164,7 +164,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Project"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolen",
+                      "enum": ["true", "false"],
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Project updated"
+                    }
+                  }
                 }
               }
             }
@@ -181,14 +192,50 @@
         "tags": ["Projects"],
         "summary": "Delete project",
         "responses": {
-          "204": {
-            "description": "Project deleted successfully"
+          "200": {
+            "description": "Project deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolen",
+                      "enum": ["true", "false"],
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Project deleted"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad request"
           },
           "404": {
-            "description": "Project not found"
+            "description": "Project not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolen",
+                      "enum": ["true", "false"],
+                      "example": "false"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Project not found or already deleted"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -318,17 +365,17 @@
                 "status": {
                   "type": "string",
                   "enum": ["available", "unavailable"],
-                  "example": "request return status 200"
+                  "example": "available"
                 },
                 "http_code": {
-                  "type": "string",
-                  "enum": ["200", "400"],
-                  "example": "200",
+                  "type": "integer",
+                  "enum": [200, 400],
+                  "example": 200,
                   "description": "request return status"
                 },
                 "response_time": {
                   "type": "float",
-                  "example": "98.27",
+                  "example": 98.27,
                   "description": "request time executed"
                 },
                 "checked_at": {
