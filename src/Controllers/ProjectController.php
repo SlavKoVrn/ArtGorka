@@ -255,8 +255,8 @@ class ProjectController
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_USERAGENT => 'ProjectManager/1.0 Availability Checker',
             CURLOPT_NOBODY => true, // HEAD запрос для экономии трафика
             CURLOPT_ENCODING => ''
