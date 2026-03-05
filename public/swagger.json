@@ -67,7 +67,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Project"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolen",
+                      "enum": ["true", "false"],
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Project created"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 10
+                    }
+                  }
                 }
               }
             }
