@@ -117,6 +117,83 @@ class ProjectController
         }
     }
 
+    /**
+     * Get project by ID
+     */
+    #[OA\Get(
+        path: '/api/projects/{id}',
+        tags: ['Projects'],
+        summary: 'Get project by ID',
+        description: 'Returns a single project by its ID',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Project ID',
+                schema: new OA\Schema(type: 'integer', minimum: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful response',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                    new OA\Property(property: 'name', type: 'string', example: 'Project Alpha'),
+                                    new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://yandex.ru'),
+                                    new OA\Property(property: 'platform', type: 'string', enum: ['WordPress', 'Bitrix', 'Custom', 'Other'], example: 'Bitrix'),
+                                    new OA\Property(property: 'status', type: 'string', enum: ['development', 'production', 'maintenance', 'archived'], example: 'production'),
+                                    new OA\Property(property: 'description', type: 'string', example: 'Project description'),
+                                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2024-01-01 00:00:00'),
+                                    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2024-01-02 00:00:00')
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid ID',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Invalid ID')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Project not found',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project not found')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to retrieve project')
+                    ]
+                )
+            )
+        ]
+    )]
     public function show(string $id): void
     {
         try {
