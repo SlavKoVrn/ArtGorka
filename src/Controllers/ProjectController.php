@@ -225,8 +225,55 @@ class ProjectController
         path: '/api/projects',
         tags: ['Projects'],
         summary: 'Create a new project',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                required: ['name', 'platform'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Project Alpha'),
+                    new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://yandex.ru'),
+                    new OA\Property(property: 'platform', type: 'string', enum: ['WordPress', 'Bitrix', 'Custom', 'Other'], example: 'Bitrix'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['development', 'production', 'maintenance', 'archived'], example: 'development'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Project description')
+                ]
+            )
+        ),
         responses: [
-            new OA\Response(response: 201, description: 'Created')
+            new OA\Response(
+                response: 201,
+                description: 'Project created',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project created'),
+                        new OA\Property(property: 'id', type: 'integer', example: 1)
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Validation error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'errors', type: 'object')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to create project')
+                    ]
+                )
+            )
         ]
     )]
     public function store(): void
