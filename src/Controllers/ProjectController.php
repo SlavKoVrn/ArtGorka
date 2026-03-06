@@ -10,9 +10,9 @@ use OpenApi\Attributes as OA;
 #[OA\OpenApi(
     openapi: '3.0.0',
     info: new OA\Info(
-        title: 'Project API',
+        title: 'REST API',
         version: '1.0.0',
-        description: 'API Documentation'
+        description: 'REST API Documentation'
     )
 )]
 class ProjectController
