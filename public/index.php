@@ -107,7 +107,7 @@ try {
             http_response_code(405);
             echo json_encode(['success' => false, 'message' => 'Method Not Allowed']);
         }
-    } else if ($uri === '/') {
+    } else if ($uri === '/postman') {
         http_response_code(200);
         header('Content-Type: text/html; charset=utf-8');
         $templateData = [
@@ -117,7 +117,7 @@ try {
         echo UrlHelper::render(__DIR__ . '/../views/home.html', $templateData);
         $logger->info('Root page served');
 
-    } else if ($uri === '/docs') {
+    } else if ($uri === '/') {
         header('Content-Type: text/html; charset=utf-8');
         echo '<!DOCTYPE html>
         <html>
