@@ -47,35 +47,55 @@ class ProjectController
         path: '/api/projects',
         tags: ['Projects'],
         summary: 'Get all projects',
-        description: 'Returns a paginated list of all projects',
-        security: [['bearerAuth' => []]],
+        description: 'Returns a list of all projects',
         parameters: [
-            new OA\Parameter(
-                name: 'page',
-                in: 'query',
-                required: false,
-                description: 'Page number',
-                schema: new OA\Schema(type: 'integer', default: 1)
-            ),
-            new OA\Parameter(
-                name: 'limit',
-                in: 'query',
-                required: false,
-                description: 'Items per page',
-                schema: new OA\Schema(type: 'integer', default: 10)
-            ),
             new OA\Parameter(
                 name: 'status',
                 in: 'query',
                 required: false,
                 description: 'Filter by status',
-                schema: new OA\Schema(type: 'string', enum: ['active', 'archived'])
+                schema: new OA\Schema(type: 'string', enum: ['development', 'production', 'maintenance', 'archived'])
             )
         ],
         responses: [
-            new OA\Response(response: 200,description: 'Successful response'),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-            new OA\Response(response: 500, description: 'Server error')
+            new OA\Response(
+                response: 200,
+                description: 'Successful response',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                type: 'object',
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                    new OA\Property(property: 'name', type: 'string', example: 'Project Alpha'),
+                                    new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://yandex.ru'),
+                                    new OA\Property(property: 'platform', type: 'string', enum: ['WordPress', 'Bitrix', 'Custom', 'Other'], example: 'Bitrix'),
+                                    new OA\Property(property: 'status', type: 'string', enum: ['development', 'production', 'maintenance', 'archived'], example: 'production'),
+                                    new OA\Property(property: 'description', type: 'string', example: 'Project description'),
+                                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2024-01-01 00:00:00'),
+                                    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2024-01-02 00:00:00')
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to retrieve projects')
+                    ]
+                )
+            )
         ]
     )]
     public function index(): void
