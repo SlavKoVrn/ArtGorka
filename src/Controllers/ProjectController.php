@@ -507,6 +507,79 @@ class ProjectController
      * Проверка доступности проекта по ID
      * POST /api/projects/{id}/check
      */
+    #[OA\Post(
+        path: '/api/projects/{id}/check',
+        tags: ['Projects'],
+        summary: 'Check project availability',
+        description: 'Checks if the project URL is accessible and returns status information',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Project ID',
+                schema: new OA\Schema(type: 'integer', minimum: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Availability check completed',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'project_id', type: 'integer', example: 1),
+                                new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://example.com'),
+                                new OA\Property(property: 'status', type: 'string', enum: ['available', 'unavailable'], example: 'available'),
+                                new OA\Property(property: 'http_code', type: 'integer', example: 200),
+                                new OA\Property(property: 'response_time', type: 'number', example: 125.5),
+                                new OA\Property(property: 'checked_at', type: 'string', format: 'date-time', example: '2024-01-15T10:30:00+00:00')
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid project URL',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Invalid project URL')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Project not found',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project not found')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to check availability'),
+                        new OA\Property(property: 'error', type: 'string', example: 'Connection timeout')
+                    ]
+                )
+            )
+        ]
+    )]
     public function checkAvailability(int $projectId): void
     {
         try {
