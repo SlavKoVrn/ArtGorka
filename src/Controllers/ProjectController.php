@@ -413,6 +413,67 @@ class ProjectController
         }
     }
 
+    #[OA\Delete(
+        path: '/api/projects/{id}',
+        tags: ['Projects'],
+        summary: 'Delete a project',
+        description: 'Permanently removes a project by its ID',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Project ID',
+                schema: new OA\Schema(type: 'integer', minimum: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Project deleted successfully',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project deleted')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid ID',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Invalid ID')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Project not found',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project not found or already deleted')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to delete project')
+                    ]
+                )
+            )
+        ]
+    )]
     public function destroy(string $id): void
     {
         try {
