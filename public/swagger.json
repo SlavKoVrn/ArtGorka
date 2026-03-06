@@ -1,393 +1,812 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "REST API",
-    "version": "srv 1.0",
-    "description": "API for managing projects"
-  },
-  "tags": [
-    {
-      "name": "Projects",
-      "description": "Project management endpoints"
-    }
-  ],
-  "paths": {
-    "/api/projects": {
-      "get": {
-        "tags": ["Projects"],
-        "summary": "Get all projects",
-        "description": "Retrieve a list of projects, optionally filtered by status",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Filter projects by status",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["development", "production", "maintenance", "archived"]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of projects",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolen",
-                      "enum": ["true", "false"],
-                      "example": "true"
-                    },
-                    "data": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/Project"
+    "openapi": "3.0.0",
+    "info": {
+        "title": "REST API",
+        "description": "REST API Documentation",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/projects": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get all projects",
+                "description": "Returns a list of all projects",
+                "operationId": "15b3cf16300ddc9e0c112eb0f21a420a",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "development",
+                                "production",
+                                "maintenance",
+                                "archived"
+                            ]
                         }
-                      }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Project Alpha"
+                                                    },
+                                                    "url": {
+                                                        "type": "string",
+                                                        "format": "uri",
+                                                        "example": "https://yandex.ru"
+                                                    },
+                                                    "platform": {
+                                                        "type": "string",
+                                                        "example": "Bitrix",
+                                                        "enum": [
+                                                            "WordPress",
+                                                            "Bitrix",
+                                                            "Custom",
+                                                            "Other"
+                                                        ]
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "production",
+                                                        "enum": [
+                                                            "development",
+                                                            "production",
+                                                            "maintenance",
+                                                            "archived"
+                                                        ]
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Project description"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-01 00:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-02 00:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve projects"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
-              }
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Create a new project",
+                "operationId": "1b6914ac8594d0d4e35185a75d5043ce",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "platform"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Project Alpha"
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "example": "https://yandex.ru"
+                                    },
+                                    "platform": {
+                                        "type": "string",
+                                        "example": "Bitrix",
+                                        "enum": [
+                                            "WordPress",
+                                            "Bitrix",
+                                            "Custom",
+                                            "Other"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "development",
+                                        "enum": [
+                                            "development",
+                                            "production",
+                                            "maintenance",
+                                            "archived"
+                                        ]
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Project description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Project created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project created"
+                                        },
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to create project"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          },
-          "400": {
-            "description": "Bad request"
-          }
-        }
-      },
-      "post": {
-        "tags": ["Projects"],
-        "summary": "Create a new project",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectInput"
-              }
-            }
-          }
         },
-        "responses": {
-          "201": {
-            "description": "Project created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolen",
-                      "enum": ["true", "false"],
-                      "example": "true"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Project created"
-                    },
-                    "id": {
-                      "type": "integer",
-                      "example": 10
+        "/api/projects/{id}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get project by ID",
+                "description": "Returns a single project by its ID",
+                "operationId": "e1d0cb424ea9d20f6fa9a2d05c4e4571",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
-                  }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Project Alpha"
+                                                },
+                                                "url": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "example": "https://yandex.ru"
+                                                },
+                                                "platform": {
+                                                    "type": "string",
+                                                    "example": "Bitrix",
+                                                    "enum": [
+                                                        "WordPress",
+                                                        "Bitrix",
+                                                        "Custom",
+                                                        "Other"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "production",
+                                                    "enum": [
+                                                        "development",
+                                                        "production",
+                                                        "maintenance",
+                                                        "archived"
+                                                    ]
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Project description"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01 00:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-02 00:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid ID"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve project"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Update an existing project",
+                "operationId": "2b44f97a8c7901060a23d9924511bc5e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Project Alpha"
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "example": "https://example.com"
+                                    },
+                                    "platform": {
+                                        "type": "string",
+                                        "example": "Bitrix",
+                                        "enum": [
+                                            "WordPress",
+                                            "Bitrix",
+                                            "Custom",
+                                            "Other"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "production",
+                                        "enum": [
+                                            "development",
+                                            "production",
+                                            "maintenance",
+                                            "archived"
+                                        ]
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Project updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project updated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid ID"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to update project"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Delete a project",
+                "description": "Permanently removes a project by its ID",
+                "operationId": "e4a40bdf79cfa346c1ff1ca6c4823714",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid ID"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project not found or already deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to delete project"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          },
-          "400": {
-            "description": "Bad request - invalid input"
-          }
+        },
+        "/api/projects/{id}/check": {
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Check project availability",
+                "description": "Checks if the project URL is accessible and returns status information",
+                "operationId": "e6a7bce1fdd5971742a1ba29f8d767f2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Availability check completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "required": [
+                                                "project_id",
+                                                "url",
+                                                "status",
+                                                "http_code",
+                                                "response_time",
+                                                "checked_at"
+                                            ],
+                                            "properties": {
+                                                "project_id": {
+                                                    "type": "integer",
+                                                    "example": 9
+                                                },
+                                                "url": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "example": "https://yandex.ru"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "available",
+                                                    "enum": [
+                                                        "available",
+                                                        "unavailable"
+                                                    ]
+                                                },
+                                                "http_code": {
+                                                    "type": "integer",
+                                                    "example": 200
+                                                },
+                                                "response_time": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 612.25
+                                                },
+                                                "checked_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2026-03-06T12:06:53+00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid project URL",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid project URL"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Project not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to check availability"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Connection timeout"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
     },
-    "/api/projects/{id}": {
-      "parameters": [
+    "tags": [
         {
-          "name": "id",
-          "in": "path",
-          "description": "Project ID",
-          "required": true,
-          "schema": {
-            "type": "integer",
-            "minimum": 1
-          }
+            "name": "Projects",
+            "description": "Projects"
         }
-      ],
-      "get": {
-        "tags": ["Projects"],
-        "summary": "Get project by ID",
-        "responses": {
-          "200": {
-            "description": "Project details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolen",
-                      "enum": ["true", "false"],
-                      "example": "true"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/Project"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Project not found"
-          }
-        }
-      },
-      "put": {
-        "tags": ["Projects"],
-        "summary": "Update project",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Project updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolen",
-                      "enum": ["true", "false"],
-                      "example": "true"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Project updated"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "Project not found"
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Projects"],
-        "summary": "Delete project",
-        "responses": {
-          "200": {
-            "description": "Project deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolen",
-                      "enum": ["true", "false"],
-                      "example": "true"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Project deleted"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "Project not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolen",
-                      "enum": ["true", "false"],
-                      "example": "false"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Project not found or already deleted"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/projects/{id}/check": {
-      "post": {
-        "tags": ["Projects"],
-        "summary": "Check project health or validity",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Project ID",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Check completed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CheckResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "Project not found"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ProjectInput": {
-        "type": "object",
-        "required": ["name", "url"],
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Project name",
-            "minLength": 1,
-            "maxLength": 255
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://yandex.ru"
-          },
-          "platform": {
-            "type": "string",
-            "example": "Bitrix",
-            "enum": ["WordPress", "Bitrix", "Custom", "Other"]
-          },
-          "status": {
-            "type": "string",
-            "example": "production",
-            "enum": ["development", "production", "maintenance", "archived"]
-          },
-          "description": {
-            "type": "string",
-            "example": "project description",
-            "maxLength": 1000
-          }
-        }
-      },
-      "Project": {
-        "type": "object",
-        "allOf": [
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "integer",
-                "example": 1,
-                "readOnly": true
-              },
-              "created_at": {
-                "type": "string",
-                "format": "date-time",
-                "example": "2026-03-05 14:22:00",
-                "readOnly": true
-              },
-              "updated_at": {
-                "type": "string",
-                "format": "date-time",
-                "example": "2026-03-05 14:22:00",
-                "readOnly": true
-              }
-            }
-          },
-          {
-            "$ref": "#/components/schemas/ProjectInput"
-          }
-        ]
-      },
-      "CheckResult": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolen",
-            "enum": ["true", "false"],
-            "example": "true"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "project_id": {
-                  "type": "integer",
-                  "example": "1"
-                },
-                "url": {
-                  "type": "uri",
-                  "example": "http://yandex.ru"
-                },
-                "status": {
-                  "type": "string",
-                  "enum": ["available", "unavailable"],
-                  "example": "available"
-                },
-                "http_code": {
-                  "type": "integer",
-                  "enum": [200, 400],
-                  "example": 200,
-                  "description": "request return status"
-                },
-                "response_time": {
-                  "type": "float",
-                  "example": 98.27,
-                  "description": "request time executed"
-                },
-                "checked_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "example": "2026-03-05T13:53:33+00:00"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+    ]
 }

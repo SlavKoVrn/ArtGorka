@@ -533,15 +533,17 @@ class ProjectController
                             property: 'data',
                             type: 'object',
                             properties: [
-                                new OA\Property(property: 'project_id', type: 'integer', example: 1),
-                                new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://example.com'),
+                                new OA\Property(property: 'project_id', type: 'integer', example: 9),
+                                new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://yandex.ru'),
                                 new OA\Property(property: 'status', type: 'string', enum: ['available', 'unavailable'], example: 'available'),
                                 new OA\Property(property: 'http_code', type: 'integer', example: 200),
-                                new OA\Property(property: 'response_time', type: 'number', example: 125.5),
-                                new OA\Property(property: 'checked_at', type: 'string', format: 'date-time', example: '2024-01-15T10:30:00+00:00')
-                            ]
+                                new OA\Property(property: 'response_time', type: 'number', format: 'float', example: 612.25),
+                                new OA\Property(property: 'checked_at', type: 'string', format: 'date-time', example: '2026-03-06T12:06:53+00:00')
+                            ],
+                            required: ['project_id', 'url', 'status', 'http_code', 'response_time', 'checked_at']
                         )
-                    ]
+                    ],
+                    required: ['success', 'data']
                 )
             ),
             new OA\Response(
