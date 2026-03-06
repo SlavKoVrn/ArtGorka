@@ -221,6 +221,14 @@ class ProjectController
         }
     }
 
+    #[OA\Post(
+        path: '/api/projects',
+        tags: ['Projects'],
+        summary: 'Create a new project',
+        responses: [
+            new OA\Response(response: 201, description: 'Created')
+        ]
+    )]
     public function store(): void
     {
         try {
