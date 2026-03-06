@@ -302,6 +302,80 @@ class ProjectController
         }
     }
 
+    #[OA\Put(
+        path: '/api/projects/{id}',
+        tags: ['Projects'],
+        summary: 'Update an existing project',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Project ID',
+                schema: new OA\Schema(type: 'integer', minimum: 1)
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Project Alpha'),
+                    new OA\Property(property: 'url', type: 'string', format: 'uri', example: 'https://example.com'),
+                    new OA\Property(property: 'platform', type: 'string', enum: ['WordPress', 'Bitrix', 'Custom', 'Other'], example: 'Bitrix'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['development', 'production', 'maintenance', 'archived'], example: 'production'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Updated description')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Project updated successfully',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project updated')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid ID or validation error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Invalid ID'),
+                        new OA\Property(property: 'errors', type: 'object')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Project not found',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Project not found')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Failed to update project')
+                    ]
+                )
+            )
+        ]
+    )]
     public function update(string $id): void
     {
         try {
