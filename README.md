@@ -150,4 +150,52 @@ php bin/db.php migrate
 php tests/api_test.php http://artgorka.kadastrcard.ru
 ```
 
+# Установка документации swagger
+
+### 1. установка библиотеки php формирования json схемы swagger
+
+```bash
+composer require zircote/swagger-php
+```
+
+### 2. composer.json
+
+```bash
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
+composer dump-autoload
+```
+
+### 3. добавление аттрибутов для формирования эндпоинтов схемы swagger
+
+```bash
+src/Controllers/ProjectController.php
+
+use OpenApi\Attributes as OA;
+
+#[OA\OpenApi(
+    openapi: '3.0.0',
+    info: new OA\Info(
+        title: 'REST API',
+        version: '1.0.0',
+        description: 'REST API Documentation'
+    )
+)]
+class ProjectController
+{
+    ...
+```
+
+### 4. команда формирования json схемы swagger документации
+
+```bash
+vendor/bin/openapi src/ -o public/swagger.json
+```
+
+
 
