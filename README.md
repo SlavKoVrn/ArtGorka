@@ -162,6 +162,9 @@ composer require zircote/swagger-php
 
 ```bash
 {
+    "require": {
+        "zircote/swagger-php": "^6.0"
+    },
     "autoload": {
         "psr-4": {
             "App\\": "src/"
